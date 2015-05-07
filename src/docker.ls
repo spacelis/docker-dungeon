@@ -62,8 +62,10 @@ module.exports = do ->
         shell.exec "docker rmi #{tag}"
 
 
-  rmi-nontagged = ->
-    tag <- _.map (shell.exec "docker images -q --no-trunc --filter 'dangling=true'"), _
-    rm-image tag
+  non-tagged-image = ->
+    shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
 
-  {opts, image-tagger, image-builder, rm-image, rmi-nontagged}
+  stopped-container = ->
+    shell.exec "docker ps -qf 'status=exited' --no-trunc"
+
+  {opts, image-tagger, image-builder, rm-image, non-tagged-image, stopped-container}
