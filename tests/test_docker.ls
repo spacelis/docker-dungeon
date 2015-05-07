@@ -80,4 +80,16 @@ describe "Docker utility functions", ->
       sandbox.stub Logging, \info
       docker.rm-image \xxxx
       sinon.assert.called-once shell.exec
+      sinon.assert.called-with shell.exec, 'docker rmi xxxx'
       sinon.assert.called-once Logging.info
+
+
+  describe "rmi-nontagged", (x) ->
+    it 'should remove image', !->
+      sandbox.stub shell, \exec .returns ['aaa', 'bbb']
+      sandbox.stub Logging, \info
+      docker.rmi-nontagged!
+      sinon.assert.call-count shell.exec, 3
+      sinon.assert.called-with shell.exec, 'docker rmi aaa'
+      sinon.assert.called-with shell.exec, 'docker rmi bbb'
+      sinon.assert.called-twice Logging.info
