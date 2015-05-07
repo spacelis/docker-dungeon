@@ -70,3 +70,16 @@ describe 'utils.Shell', !->
       sinon.assert.calledWith process.exit, -1
       sinon.assert.calledOnce chproc.spawnSync
       sinon.assert.calledWith chproc.spawnSync, 'ls', [\-l, \root], stdio: [0, 0, 0], cwd: '/'
+
+describe 'utils.ArrayStream', (x) !->
+  it "should emit data in array", (done)->
+    failed = false
+    utils.ArrayStream [1,2,3]
+      .on \data, (v)->
+        expect v .to.be.at.least 1
+        expect v .to.be.at.most 3
+      .on \end, ->
+        done!
+      .on \error, (e) ->
+        done e
+

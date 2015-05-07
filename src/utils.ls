@@ -1,5 +1,6 @@
 "use_strict"
 chproc = require \child_process
+stream = require \stream
 _ = require \underscore
 
 module.exports = do ->
@@ -59,5 +60,12 @@ module.exports = do ->
       options?.stdio = \inherit
       @launcher cmd, args, options
 
-  Logging : Logging,
-  Shell : Shell
+  ArrayStream = (arr) ->
+    s = new stream.Readable objectMode: true
+    s._read = ->
+      _.each arr, (x) -> s.push x
+      s.push null
+    s
+
+
+  {Logging, Shell, ArrayStream}
