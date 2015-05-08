@@ -5,7 +5,7 @@ ls = require \gulp-livescript
 gulp.task \compile, ->
   gulp.src 'src/*.ls'
   .pipe ls bare:true
-  .pipe gulp.dest 'build'
+  .pipe gulp.dest 'lib'
 
 
 gulp.task \compile-tests, ->
