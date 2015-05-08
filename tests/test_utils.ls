@@ -72,6 +72,14 @@ describe 'utils.Shell', !->
       sinon.assert.calledWith chproc.spawnSync, 'ls', [\-l, \root], stdio: [0, 0, 0], cwd: '/'
 
 describe 'utils.ArrayStream', (x) !->
+  var sandbox
+
+  beforeEach !->
+    sandbox := sinon.sandbox.create!
+
+  afterEach !->
+    sandbox.restore!
+
   it "should emit data in array", (done)->
     failed = false
     utils.ArrayStream [1,2,3]
@@ -83,3 +91,17 @@ describe 'utils.ArrayStream', (x) !->
       .on \error, (e) ->
         done e
 
+  it "should quit gracefully when there is no data", (done)->
+    failed = false
+    dummy = sandbox.spy!
+    utils.ArrayStream []
+      .on \data, (v)->
+        dummy!
+      .on \end, ->
+        try
+          sinon.assert.not-called dummy
+          done!
+        catch e
+          done e
+      .on \error, (e) ->
+        done e

@@ -57,15 +57,31 @@ module.exports = do ->
 
   rm-image = (tag) ->
     try
-      if tag?.length > 0
+      if tag?.length? > 0
         Logging.info "Deleting image #{tag}"
         shell.exec "docker rmi #{tag}"
+    tag
+
+  push-image = (tag) ->
+    try
+      if tag?.length? > 0
+        Logging.info "Pushing image #{tag}"
+        shell.exec "docker push #{tag}"
+    tag
 
 
-  non-tagged-image = ->
-    shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
+  rm-container = (name) ->
+    try
+      if name?.length? > 0
+        Logging.info "Deleting container #{name}"
+        shell.exec "docker rmi #{name}"
+    name
 
-  stopped-container = ->
-    shell.exec "docker ps -qf 'status=exited' --no-trunc"
 
-  {opts, image-tagger, image-builder, rm-image, non-tagged-image, stopped-container}
+  non-tagged-images = ->
+    utils.ArrayStream shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
+
+  stopped-containers = ->
+    utils.ArrayStream shell.exec "docker ps -qf 'status=exited' --no-trunc"
+
+  {opts, image-tagger, image-builder, rm-image, non-tagged-images, stopped-containers}
