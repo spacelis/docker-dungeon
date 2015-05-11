@@ -1,10 +1,16 @@
-gulp = require \gulp
 _ = require \underscore
 map = require \through2-map
 docker = require './docker'
 minimist = require \minimist
 
-module.exports = do ->
+module.exports = (gulp) ->
+
+  /** check whether the argument gulp is already wrapped by gulp-help
+  */
+  if not gulp.tasks.help?.help?
+    console.log "Gulp not wrapped with gulp-help, get it wrapped."
+    gulp = (require \gulp-help) gulp
+
   common-tasks : (dirs, opts) ->
 
     if opts?.images?
@@ -13,7 +19,7 @@ module.exports = do ->
       all_image = "**"
 
 
-    gulp.task 'build', 'Build image for the one or the all images', ->
+    gulp.task \build, 'Build image for the one or the all images', ->
       argv = process.argv.slice 2
       img = argv.i or all_image
       docker.dockerfile-finder "#{img}/Dockerfile"
@@ -22,7 +28,7 @@ module.exports = do ->
         .pipe docker.image-builder!
     
 
-    gulp.task 'rmi', 'Clean up untagged images', ->
+    gulp.task \rmi, 'Clean up untagged images', ->
       docker.non-tagged-image!
         .pipe map (img) -> docker.rm-image img
 
