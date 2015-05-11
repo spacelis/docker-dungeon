@@ -1,5 +1,5 @@
 {
-  "name": "udocker",
+  "name": "docker-dungeon",
   "version": "0.0.1",
   "description": "A collection utility functions for managing a docker container developer's life.",
   "main": "lib/index.js",
