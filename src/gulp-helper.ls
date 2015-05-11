@@ -11,7 +11,7 @@ module.exports = (gulp) ->
     console.log "Gulp not wrapped with gulp-help, get it wrapped."
     gulp = (require \gulp-help) gulp
 
-  common-tasks : (dirs, opts) ->
+  common-tasks : (opts) ->
 
     if opts?.images?
       all_image = "@(#{ opts.images.join('|') })"
