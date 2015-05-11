@@ -1,6 +1,7 @@
 _ = require \underscore
 map = require \through2-map
 docker = require './docker'
+utils = require './utils'
 minimist = require \minimist
 
 module.exports = (gulp) ->
@@ -8,7 +9,7 @@ module.exports = (gulp) ->
   /** check whether the argument gulp is already wrapped by gulp-help
   */
   if not gulp.tasks.help?.help?
-    console.log "Gulp not wrapped with gulp-help, get it wrapped."
+    utils.Logging.warn "[docker-dungeon] Gulp not wrapped with gulp-help, get it wrapped."
     gulp = (require \gulp-help) gulp
 
   common-tasks : (opts) ->
@@ -29,7 +30,7 @@ module.exports = (gulp) ->
     
 
     gulp.task \rmi, 'Clean up untagged images', ->
-      docker.non-tagged-image!
+      docker.non-tagged-images!
         .pipe map (img) -> docker.rm-image img
 
     
