@@ -3,8 +3,7 @@ byline = require \byline
 th2 = require \through2
 streamifier = require \streamifier
 path = require \path
-shell = require './utils' .Shell
-Logging = require './utils' .Logging
+utils = require './utils' 
 
 
 module.exports = do ->
@@ -48,40 +47,43 @@ module.exports = do ->
     |> _.map _, (tag) -> [\-t, tag]
     |> _.flatten _, true
 
-    shell.launcher \docker, ([\build].concat dockeropts, [\.]),
+    utils.Shell.launcher \docker, ([\build].concat dockeropts, [\.]),
       cwd: dir
-    Logging.info "Finished building #{dir}"
+    utils.Logging.info "Finished building #{dir}"
     @push {dockerfile, tags}
     cb!
 
 
   rm-image = (tag) ->
+    tag = tag.toString \utf8
     try
-      if tag?.length? > 0
-        Logging.info "Deleting image #{tag}"
-        shell.exec "docker rmi #{tag}"
+      if tag?.trim!.length? > 0
+        utils.Logging.info "Deleting image #{tag}"
+        utils.Shell.exec "docker rmi #{tag}"
     tag
 
   push-image = (tag) ->
+    tag = tag.toString \utf8
     try
-      if tag?.length? > 0
-        Logging.info "Pushing image #{tag}"
-        shell.exec "docker push #{tag}"
+      if tag?.trim!.length? > 0
+        utils.Logging.info "Pushing image #{tag}"
+        utils.Shell.exec "docker push #{tag}"
     tag
 
 
   rm-container = (name) ->
+    name = name.toString \utf8
     try
-      if name?.length? > 0
-        Logging.info "Deleting container #{name}"
-        shell.exec "docker rmi #{name}"
+      if name?.trim!.length? > 0
+        utils.Logging.info "Deleting container #{name}"
+        utils.Shell.exec "docker rm #{name}"
     name
 
 
   non-tagged-images = ->
-    utils.ArrayStream shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
+    utils.ArrayStream utils.Shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
 
   stopped-containers = ->
-    utils.ArrayStream shell.exec "docker ps -qf 'status=exited' --no-trunc"
+    utils.ArrayStream utils.Shell.exec "docker ps -qf 'status=exited' --no-trunc"
 
-  {opts, image-tagger, image-builder, rm-image, non-tagged-images, stopped-containers}
+  {opts, image-tagger, image-builder, rm-image, rm-container, non-tagged-images, stopped-containers}
