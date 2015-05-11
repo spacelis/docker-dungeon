@@ -16,3 +16,6 @@ gulp.task \compile-tests, ->
 gulp.task \test, [\compile, \compile-tests], ->
   gulp.src 'tests/*.js', read: false
   .pipe mocha reporter: \progress
+
+gulp.task \watch, ->
+  gulp.watch 'src/*.ls', [\compile]
