@@ -15,9 +15,12 @@
   "dependencies": {
     "byline": "^4.2.1",
     "chalk": "^1.0.0",
+    "gulp": "^3.8.11",
     "linestream": "^0.3.2",
+    "minimist": "^1.1.1",
     "streamifier": "^0.1.1",
     "through2": "^0.6.5",
+    "through2-map": "^1.4.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
