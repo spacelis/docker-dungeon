@@ -103,6 +103,7 @@ module.exports = do ->
     image-builder, 
     server-prefixed-tags,
     rm-image, 
+    push-image,
     rm-container, 
     non-tagged-images, 
     stopped-containers}
