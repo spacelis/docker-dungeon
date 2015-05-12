@@ -21,27 +21,27 @@ module.exports = (gulp) ->
 
 
     gulp.task \build, 'Build image for the one or the all images', ->
-      argv = process.argv.slice 2
+      argv = minimist process.argv.slice 2
+      console.log argv
       img = argv.i or all_image
-      docker.dockerfile-finder "#{img}/Dockerfile"
-        .pipe map (d) -> d.path
+      gulp.src "#{img}/Dockerfile"
+        .pipe docker.docker-spec!
         .pipe docker.image-tagger!
         .pipe docker.image-builder!
     
 
     gulp.task \rmi, 'Clean up untagged images', ->
       docker.non-tagged-images!
-        .pipe map want-strings: true, (img) -> 
+        .pipe map.obj (img) -> 
           docker.rm-image img
 
     
     gulp.task \clean, 'Remove all built images', ->
       docker.dockerfile-finder "#{ all_image }/Dockerfile"
-        .pipe map (d) -> d.path
         .pipe docker.image-tagger!
-        .pipe th2 ({tag}, enc, cb) ->
+        .pipe map.obj (tag) ->
           docker.rm-image tag
-          cb!
+          tag
 
 
     gulp.task \push, 'Push all built images to gladys', ->
@@ -49,14 +49,13 @@ module.exports = (gulp) ->
       img = argv.i or all_image
       docker.dockerfile-finder "#{img}/Dockerfile"
         .pipe docker.image-tagger!
-        .pipe th2 ({tag}, enc, cb) ->
+        .pipe map.obj (tag) ->
           docker.push-image tag
-          cb!
 
 
     gulp.task \rm, 'Removing all stopped containers', ->
       docker.stopped-containers!
-        .pipe map want-strings: true, (name) -> 
+        .pipe map.obj (name) -> 
           docker.rm-container name
 
 

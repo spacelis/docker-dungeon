@@ -16,12 +16,10 @@ module.exports = do ->
     then line.substring(pos + opts.tagptn.length + 1).trim! 
     else ''
 
-  dockerfile-finder = (ptn) ->
-    ptn ?= '**/Dockerfile'
-    gulp.src(ptn)
-      .pipe th2.obj (file, enc, cb) ->
-        @push dockerfile: file
-        cb!
+  docker-spec = ->
+    th2.obj (file, enc, cb) ->
+      @push dockerfile: file
+      cb!
 
   /**
   * Find all tags from a given dockerfile
@@ -42,7 +40,7 @@ module.exports = do ->
   image-builder = -> th2.obj ({dockerfile, tags}, enc, cb) !->
     return if _.is-empty tags
     dir = path.dirname path.resolve dockerfile.path
-    Logging.info "Building #{dir}"
+    utils.Logging.info "Building #{dir}"
     dockeropts = tags
     |> _.map _, (tag) -> [\-t, tag]
     |> _.flatten _, true
@@ -93,4 +91,4 @@ module.exports = do ->
           @push name 
         cb!
 
-  {opts, image-tagger, image-builder, rm-image, rm-container, non-tagged-images, stopped-containers}
+  {opts, docker-spec, image-tagger, image-builder, rm-image, rm-container, non-tagged-images, stopped-containers}
