@@ -32,31 +32,36 @@ module.exports = (gulp) ->
 
     gulp.task \rmi, 'Clean up untagged images', ->
       docker.non-tagged-images!
-        .pipe map.obj (img) -> 
-          docker.rm-image img
+        .pipe map.obj (img-id) -> 
+          docker.rm-image img-id
 
     
     gulp.task \clean, 'Remove all built images', ->
-      docker.dockerfile-finder "#{ all_image }/Dockerfile"
+      gulp.src "#{img}/Dockerfile"
+        .pipe docker.docker-spec!
         .pipe docker.image-tagger!
-        .pipe map.obj (tag) ->
-          docker.rm-image tag
+        .pipe map.obj (img) ->
+          _.each img.tags, (t) ->
+            docker.rm-image tag
           tag
 
 
     gulp.task \push, 'Push all built images to gladys', ->
       argv = process.argv.slice 2
       img = argv.i or all_image
-      docker.dockerfile-finder "#{img}/Dockerfile"
+      gulp.src "#{img}/Dockerfile"
+        .pipe docker.docker-spec!
         .pipe docker.image-tagger!
-        .pipe map.obj (tag) ->
-          docker.push-image tag
+        .pipe map.obj (img) ->
+          _.each img.tags, (t) ->
+            docker.push-image tag
+          tag
 
 
     gulp.task \rm, 'Removing all stopped containers', ->
       docker.stopped-containers!
-        .pipe map.obj (name) -> 
-          docker.rm-container name
+        .pipe map.obj (ctn-id) -> 
+          docker.rm-container ctn-id
 
 
     gulp.task \bash, 'Equal to `docker exec -it <container> /bin/bash`', ->
