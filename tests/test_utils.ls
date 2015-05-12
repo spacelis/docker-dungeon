@@ -3,7 +3,7 @@ sinon = require \sinon
 th2 = require \through2
 chproc = require \child_process
 
-utils = require '../build/utils'
+utils = require '../lib/utils'
 
 describe 'utils.Logging', ->
   var sandbox

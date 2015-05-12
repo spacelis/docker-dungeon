@@ -1,7 +1,7 @@
 expect = require \chai .expect
 sinon = require \sinon
 
-utils = require '../build/utils'
+utils = require '../lib/utils'
 
 
 describe 'common-tasks', ->
