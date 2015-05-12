@@ -37,6 +37,14 @@ module.exports = do ->
       cb!
 
 
+  server-prefixed-tags = ->
+    th2.obj (image, enc, cb) !->
+      if image?.tags?.length > 0
+        image.tags = _.filter image.tags, (s) -> s.split /\// .length > 2
+        @push image
+      cb!
+
+
   image-builder = -> th2.obj ({dockerfile, tags}, enc, cb) !->
     return if _.is-empty tags
     dir = path.dirname path.resolve dockerfile.path
@@ -88,4 +96,13 @@ module.exports = do ->
           @push name 
         cb!
 
-  {opts, docker-spec, image-tagger, image-builder, rm-image, rm-container, non-tagged-images, stopped-containers}
+  {
+    opts, 
+    docker-spec, 
+    image-tagger, 
+    image-builder, 
+    server-prefixed-tags,
+    rm-image, 
+    rm-container, 
+    non-tagged-images, 
+    stopped-containers}

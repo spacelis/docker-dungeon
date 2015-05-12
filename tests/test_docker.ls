@@ -6,9 +6,9 @@ th2 = require \through2
 File = require \vinyl
 _ = require \underscore
 
-docker = require '../build/docker'
-shell = require '../build/utils' .Shell
-Logging = require '../build/utils' .Logging
+docker = require '../lib/docker'
+shell = require '../lib/utils' .Shell
+Logging = require '../lib/utils' .Logging
 
 describe "Docker utility functions", ->
   
@@ -18,7 +18,7 @@ describe "Docker utility functions", ->
       s.push dockerfile : new File cwd: '/', base: '/test/', path: '/test/mockfile_a', contents: new Buffer '''
         CMD aaa
         CMD aaa
-        # --TAG: xxx
+        # --TAG: xxx/bbb/ccc
         # --TAG: yyy
         ''', 'utf8'
       s.push dockerfile : new File cwd: '/', base: '/test/', path: '/test/mockfile_b', contents: new Buffer '''
@@ -66,7 +66,7 @@ describe "Docker utility functions", ->
           failed = false
           try
             sinon.assert.called-twice shell.launcher
-            sinon.assert.called-with shell.launcher, \docker, [\build, \-t, \xxx, \-t, \yyy, \.], cwd: '/test'
+            sinon.assert.called-with shell.launcher, \docker, [\build, \-t, 'xxx/bbb/ccc', \-t, \yyy, \.], cwd: '/test'
             sinon.assert.called-with shell.launcher, \docker, [\build, \-t, \zzz, \.], cwd: '/test'
             sinon.assert.call-count Logging.info, 4
           catch e
@@ -82,3 +82,17 @@ describe "Docker utility functions", ->
       sinon.assert.called-once shell.exec
       sinon.assert.called-with shell.exec, 'docker rmi xxxx'
       sinon.assert.called-once Logging.info
+
+  describe "server-prefixed-tags", (x) ->
+    it 'should leave only tags with server prefix', (done)->
+      get-a-stream!
+        .pipe docker.image-tagger!
+        .pipe docker.server-prefixed-tags!
+        .on \data, (img) ->
+          try
+            _.each img.tags, (t) -> expect t .to.match /^.+\/.+\/.+$/
+          catch e
+            @emit \error, e
+        .on \error, (e) -> done e
+        .on \end, ->
+          done!
