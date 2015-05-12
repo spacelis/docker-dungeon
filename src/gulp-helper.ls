@@ -41,9 +41,9 @@ module.exports = (gulp) ->
         .pipe docker.docker-spec!
         .pipe docker.image-tagger!
         .pipe map.obj (img) ->
-          _.each img.tags, (t) ->
+          _.each img.tags, (tag) ->
             docker.rm-image tag
-          tag
+          img
 
 
     gulp.task \push, 'Push all built images to gladys', ->
@@ -52,10 +52,11 @@ module.exports = (gulp) ->
       gulp.src "#{img}/Dockerfile"
         .pipe docker.docker-spec!
         .pipe docker.image-tagger!
+        .pipe docker.server-prefixed-tags!
         .pipe map.obj (img) ->
-          _.each img.tags, (t) ->
+          _.each img.tags, (tag) ->
             docker.push-image tag
-          tag
+          img
 
 
     gulp.task \rm, 'Removing all stopped containers', ->
