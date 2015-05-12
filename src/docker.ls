@@ -54,31 +54,28 @@ module.exports = do ->
 
   rm-image = (tag) ->
     try
-      if tag?.trim!.length? > 0
-        utils.Logging.info "Deleting image #{tag}"
-        utils.Shell.exec "docker rmi #{tag}"
+      utils.Logging.info "Deleting image #{tag}"
+      utils.Shell.exec "docker rmi #{tag}"
     tag
 
   push-image = (tag) ->
     try
-      if tag?.trim!.length? > 0
-        utils.Logging.info "Pushing image #{tag}"
-        utils.Shell.exec "docker push #{tag}"
+      utils.Logging.info "Pushing image #{tag}"
+      utils.Shell.exec "docker push #{tag}"
     tag
 
 
   rm-container = (name) ->
     try
-      if name?.trim!.length? > 0
-        utils.Logging.info "Deleting container #{name}"
-        utils.Shell.exec "docker rm #{name}"
+      utils.Logging.info "Deleting container #{name}"
+      utils.Shell.exec "docker rm #{name}"
     name
 
 
   non-tagged-images = ->
     utils.ArrayStream utils.Shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
       .pipe th2.obj (ch, enc, cb) ->
-        name = ch.to-string \utf8
+        name = ch.to-string \utf8 .trim!
         if name?.length > 0
           @push name 
         cb!
@@ -86,7 +83,7 @@ module.exports = do ->
   stopped-containers = ->
     utils.ArrayStream utils.Shell.exec "docker ps -qf 'status=exited' --no-trunc"
       .pipe th2.obj (ch, enc, cb) ->
-        name = ch.to-string \utf8
+        name = ch.to-string \utf8 .trim!
         if name?.length > 0
           @push name 
         cb!
