@@ -12,7 +12,10 @@
   ],
   "author": "SpaceLi",
   "license": "MIT LICENSE",
-  "repository": "https://github.com/docker/docker-registry.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/docker/docker-registry.git"
+  },
   "dependencies": {
     "byline": "^4.2.1",
     "chalk": "^1.0.0",
