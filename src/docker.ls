@@ -55,7 +55,6 @@ module.exports = do ->
 
 
   rm-image = (tag) ->
-    tag = tag.toString \utf8
     try
       if tag?.trim!.length? > 0
         utils.Logging.info "Deleting image #{tag}"
@@ -63,7 +62,6 @@ module.exports = do ->
     tag
 
   push-image = (tag) ->
-    tag = tag.toString \utf8
     try
       if tag?.trim!.length? > 0
         utils.Logging.info "Pushing image #{tag}"
@@ -72,7 +70,6 @@ module.exports = do ->
 
 
   rm-container = (name) ->
-    name = name.toString \utf8
     try
       if name?.trim!.length? > 0
         utils.Logging.info "Deleting container #{name}"
@@ -82,8 +79,18 @@ module.exports = do ->
 
   non-tagged-images = ->
     utils.ArrayStream utils.Shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
+      .pipe th2.obj (ch, enc, cb) ->
+        name = ch.to-string \utf8
+        if name?.length > 0
+          @push name 
+        cb!
 
   stopped-containers = ->
     utils.ArrayStream utils.Shell.exec "docker ps -qf 'status=exited' --no-trunc"
+      .pipe th2.obj (ch, enc, cb) ->
+        name = ch.to-string \utf8
+        if name?.length > 0
+          @push name 
+        cb!
 
   {opts, image-tagger, image-builder, rm-image, rm-container, non-tagged-images, stopped-containers}

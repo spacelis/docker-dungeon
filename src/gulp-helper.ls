@@ -31,7 +31,8 @@ module.exports = (gulp) ->
 
     gulp.task \rmi, 'Clean up untagged images', ->
       docker.non-tagged-images!
-        .pipe map (img) -> docker.rm-image img
+        .pipe map want-strings: true, (img) -> 
+          docker.rm-image img
 
     
     gulp.task \clean, 'Remove all built images', ->
@@ -55,7 +56,8 @@ module.exports = (gulp) ->
 
     gulp.task \rm, 'Removing all stopped containers', ->
       docker.stopped-containers!
-        .pipe map (name) -> docker.rm-container name
+        .pipe map want-strings: true, (name) -> 
+          docker.rm-container name
 
 
     gulp.task \bash, 'Equal to `docker exec -it <container> /bin/bash`', ->
