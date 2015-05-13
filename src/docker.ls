@@ -49,12 +49,13 @@ module.exports = do ->
     return if _.is-empty tags
     dir = path.dirname path.resolve dockerfile.path
     utils.Logging.info "Building #{dir}"
-    dockeropts = tags
-    |> _.map _, (tag) -> [\-t, tag]
-    |> _.flatten _, true
+    dockeropts = if tags.length > 0 then ['-t', tags[0]] else []
 
-    utils.Shell.launcher \docker, ([\build].concat dockeropts, [\.]),
+    utils.Shell.launcher \docker, ([\build].concat dockeropts, ['.']),
       cwd: dir
+    for tag in tags[1 to]
+      utils.Shell.launcher \docker, [\tag, tags[0], tag]
+
     utils.Logging.info "Finished building #{dir}"
     @push {dockerfile, tags}
     cb!
