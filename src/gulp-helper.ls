@@ -3,6 +3,7 @@ map = require \through2-map
 docker = require './docker'
 utils = require './utils'
 minimist = require \minimist
+path = require \path
 
 module.exports = (gulp) ->
 
@@ -22,7 +23,6 @@ module.exports = (gulp) ->
 
     gulp.task \build, 'Build image for the one or the all images', ->
       argv = minimist process.argv.slice 2
-      console.log argv
       img = argv.i or all_image
       gulp.src "#{img}/Dockerfile"
         .pipe docker.docker-spec!
@@ -68,17 +68,17 @@ module.exports = (gulp) ->
     gulp.task \bash, 'Equal to `docker exec -it <container> /bin/bash`', ->
       argv = minimist process.argv.slice 2
       container = argv.i
-      docker.interactive-launcher \docker, [ \exec, \-it, "#{path.basename path.resolve '.'}_#{ container }_1".replace(/-/g, ''), '/bin/bash' ]
+      utils.Shell.interactive-launcher \docker, [ \exec, \-it, "#{path.basename path.resolve '.'}_#{ container }_1".replace(/-/g, ''), '/bin/bash' ]
 
 
   certificate : ->
 
     gulp.task \mkcert, 'Make a self-signed certificate for HTTPS connection', ->
-      docker.interactive-launcher \openssl, [ \genrsa, \-des3, \-passout, 'pass:x', \-out, 'server.pass.key', \2048 ]
-      docker.interactive-launcher \openssl, [ \rsa, \-passin, 'pass:x', \-in, 'server.pass.key', \-out, 'server.key']
-      docker.interactive-launcher \rm, [ 'server.pass.key' ]
-      docker.interactive-launcher \openssl, [ \req, \-new, \-key, 'server.key', \-out, 'server.csr']
-      docker.interactive-launcher \openssl, [ \x509, \-req, \-days, \365, \-in, 'server.csr', \-signkey, 'server.key', \-out, 'server.crt']
+      utils.Shell.interactive-launcher \openssl, [ \genrsa, \-des3, \-passout, 'pass:x', \-out, 'server.pass.key', \2048 ]
+      utils.Shell.interactive-launcher \openssl, [ \rsa, \-passin, 'pass:x', \-in, 'server.pass.key', \-out, 'server.key']
+      utils.Shell.interactive-launcher \rm, [ 'server.pass.key' ]
+      utils.Shell.interactive-launcher \openssl, [ \req, \-new, \-key, 'server.key', \-out, 'server.csr']
+      utils.Shell.interactive-launcher \openssl, [ \x509, \-req, \-days, \365, \-in, 'server.csr', \-signkey, 'server.key', \-out, 'server.crt']
 
   docs : ->
 
