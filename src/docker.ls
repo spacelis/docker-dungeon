@@ -77,7 +77,7 @@ module.exports = do ->
   rm-container = (name) ->
     try
       utils.Logging.info "Deleting container #{name}"
-      utils.Shell.exec "docker rm #{name}"
+      utils.Shell.exec "docker rm -v #{name}"
     name
 
 
