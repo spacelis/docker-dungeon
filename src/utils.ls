@@ -57,7 +57,9 @@ module.exports = do ->
     * Executing the command as it is running by itself which can get user's input
     */
     interactive-launcher : (cmd, args, options) ->
-      options?.stdio = \inherit
+      options ?= {}
+      options.stdio ?= \inherit
+      options.env = process.env
       @launcher cmd, args, options
 
   ArrayStream = (arr) ->
