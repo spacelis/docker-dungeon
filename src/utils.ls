@@ -32,7 +32,7 @@ module.exports = do ->
     * Executing the comaand and return the output as a list of lines
     */
     exec : (bashcmd, cwd) ->
-      cwd ?= '.'
+      cwd ?= process.env.PWD
       output = (chproc.execSync "bash -c '#{bashcmd}'", cwd: cwd).toString!.split '\n' ? []
       if output.length is 1 and output[0].trim() is ""
         []
@@ -45,9 +45,10 @@ module.exports = do ->
     */
     launcher : (cmd, args, options) ->
       args ?= []
-      Logging.exec "[#{options?.cwd ? "."}]: #{cmd} #{ args?.join ' ' }"
       options ?= {}
       options.stdio ?= [0, 0, 0]
+      options.cwd ?= process.env.PWD
+      Logging.exec "[#{ options.cwd }]: #{cmd} #{ args?.join ' ' }"
       app = chproc.spawnSync cmd, args, options
       if app.status != 0
         Logging.err "Cmd returned #{app.status} #{cmd} #{args?.join ' '}"
