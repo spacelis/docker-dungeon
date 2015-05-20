@@ -73,7 +73,7 @@ module.exports = (gulp) ->
       utils.Shell.interactive-launcher \docker, [ \exec, \-it, "#{path.basename path.resolve '.'}_#{ container }_1".replace(/-/g, ''), '/bin/bash' ]
 
 
-  certificate : ->
+  certificate-tasks : ->
 
     gulp.task \mkcert, 'Make a self-signed certificate for HTTPS connection', ->
       utils.Shell.interactive-launcher \openssl, [ \genrsa, \-des3, \-passout, 'pass:x', \-out, 'server.pass.key', \2048 ]
@@ -82,7 +82,7 @@ module.exports = (gulp) ->
       utils.Shell.interactive-launcher \openssl, [ \req, \-new, \-key, 'server.key', \-out, 'server.csr']
       utils.Shell.interactive-launcher \openssl, [ \x509, \-req, \-days, \365, \-in, 'server.csr', \-signkey, 'server.key', \-out, 'server.crt']
 
-  docs : ->
+  doc-tasks : ->
 
     md = require \gulp-markdown-pdf
     gmdcss = require \generate-github-markdown-css
