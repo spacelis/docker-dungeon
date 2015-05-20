@@ -76,11 +76,15 @@ module.exports = (gulp) ->
   certificate-tasks : ->
 
     gulp.task \mkcert, 'Make a self-signed certificate for HTTPS connection', ->
-      utils.Shell.interactive-launcher \openssl, [ \genrsa, \-des3, \-passout, 'pass:x', \-out, 'server.pass.key', \2048 ]
-      utils.Shell.interactive-launcher \openssl, [ \rsa, \-passin, 'pass:x', \-in, 'server.pass.key', \-out, 'server.key']
-      utils.Shell.interactive-launcher \rm, [ 'server.pass.key' ]
-      utils.Shell.interactive-launcher \openssl, [ \req, \-new, \-key, 'server.key', \-out, 'server.csr']
-      utils.Shell.interactive-launcher \openssl, [ \x509, \-req, \-days, \365, \-in, 'server.csr', \-signkey, 'server.key', \-out, 'server.crt']
+      argv = minimist process.argv.slice 2
+      keep_tmp = argv.k
+      name = argv.n || 'server'
+      utils.Shell.interactive-launcher \openssl, [ \genrsa, \-des3, \-passout, 'pass:x', \-out, "#{ name }.pass.key", \2048 ]
+      utils.Shell.interactive-launcher \openssl, [ \rsa, \-passin, 'pass:x', \-in, "#{ name }.pass.key", \-out, "#{ name }.key"]
+      utils.Shell.interactive-launcher \openssl, [ \req, \-new, \-key, "#{ name }.key", \-out, "#{ name }.csr"]
+      utils.Shell.interactive-launcher \openssl, [ \x509, \-req, \-days, \365, \-in, "#{ name }.csr", \-signkey, "#{ name }.key", \-out, "#{ name }.crt"]
+      if not keep_tmp
+        utils.Shell.interactive-launcher \rm, [ "#{ name }.pass.key", "#{ name }.csr" ]
 
   doc-tasks : ->
 
