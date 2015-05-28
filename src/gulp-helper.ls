@@ -72,6 +72,10 @@ module.exports = (gulp) ->
       container = argv.i
       utils.Shell.interactive-launcher \docker, [ \exec, \-it, "#{path.basename path.resolve '.'}_#{ container }_1".replace(/-/g, ''), '/bin/bash' ]
 
+    gulp.task \info, 'Equal to `docker inspect <container>`', ->
+      argv = minimist process.argv.slice 2
+      container = argv.i
+      utils.Shell.interactive-launcher \docker, [ \inspect, "#{path.basename path.resolve '.'}_#{ container }_1".replace(/-/g, '') ]
 
   certificate-tasks : ->
 
