@@ -66,6 +66,10 @@ module.exports = (gulp) ->
         .pipe map.obj (ctn-id) -> 
           docker.rm-container ctn-id
 
+    gulp.task \stopall, 'Stop all the running containers', ->
+      docker.running-containers!
+        .pipe map.obj (ctn-id) -> 
+          docker.stop-container ctn-id
 
     gulp.task \bash, 'Equal to `docker exec -it <container> /bin/bash`', ->
       argv = minimist process.argv.slice 2

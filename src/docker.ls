@@ -80,6 +80,11 @@ module.exports = do ->
       utils.Shell.exec "docker rm -v #{name}"
     name
 
+  stop-container = (ctn-id) ->
+    try
+      utils.Logging.info "Stopping container #{ctn-id}"
+      utils.Shell.exec "docker stop #{ctn-id}"
+    ctn-id
 
   non-tagged-images = ->
     utils.ArrayStream utils.Shell.exec "docker images -q --no-trunc --filter 'dangling=true'"
@@ -97,6 +102,14 @@ module.exports = do ->
           @push name 
         cb!
 
+  running-containers = ->
+    utils.ArrayStream utils.Shell.exec "docker ps -q --no-trunc"
+      .pipe th2.obj (ch, enc, cb) ->
+        name = ch.to-string \utf8 .trim!
+        if name?.length > 0
+          @push name 
+        cb!
+
   {
     opts, 
     docker-spec, 
@@ -107,4 +120,7 @@ module.exports = do ->
     push-image,
     rm-container, 
     non-tagged-images, 
-    stopped-containers}
+    stopped-containers,
+    running-containers,
+    stop-container
+  }
