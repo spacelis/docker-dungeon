@@ -45,11 +45,15 @@ module.exports = do ->
       cb!
 
 
-  image-builder = -> th2.obj ({dockerfile, tags}, enc, cb) !->
+  image-builder = (opt) -> th2.obj ({dockerfile, tags}, enc, cb) !->
     return if _.is-empty tags
     dir = path.dirname path.resolve dockerfile.path
     utils.Logging.info "Building #{dir}"
     dockeropts = if tags.length > 0 then ['-t', tags[0]] else []
+    cache = if opt?.cache === false then false else true
+    console.log(opt)
+    console.log(cache)
+    dockeropts = dockeropts.concat if not cache then ['--no-cache'] else []
 
     utils.Shell.launcher \docker, ([\build].concat dockeropts, ['.']),
       cwd: dir

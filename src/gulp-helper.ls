@@ -23,13 +23,14 @@ module.exports = (gulp) ->
 
     gulp.task \build, 'Build image for the one or the all images', ->
       argv = minimist process.argv.slice 2
+      console.log argv.cache
       img = argv.i or all_image
       if _.isArray img
         img = "@(#{ img.join('|') })"
       gulp.src "#{img}/Dockerfile"
         .pipe docker.docker-spec!
         .pipe docker.image-tagger!
-        .pipe docker.image-builder!
+        .pipe docker.image-builder {cache: argv.cache}
     
 
     gulp.task \rmi, 'Clean up untagged images', ->
