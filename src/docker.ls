@@ -3,17 +3,17 @@ byline = require \byline
 th2 = require \through2
 streamifier = require \streamifier
 path = require \path
-utils = require './utils' 
+utils = require './utils'
 
 
 module.exports = do ->
 
-  opts = 
+  opts =
     tagptn : "# --TAG:"
 
   extract = (line) ->
-    if (pos = line.indexOf opts.tagptn) >= 0 
-    then line.substring(pos + opts.tagptn.length + 1).trim! 
+    if (pos = line.indexOf opts.tagptn) >= 0
+    then line.substring(pos + opts.tagptn.length + 1).trim!
     else ''
 
   docker-spec = ->
@@ -24,13 +24,13 @@ module.exports = do ->
   /**
   * Find all tags from a given dockerfile
   */
-  image-tagger = -> 
+  image-tagger = ->
     th2.obj (image, enc, cb) !->
       tags = []
       image.dockerfile.contents.toString \utf8 .split('\n')
       |> _.map _, extract
       |> _.filter _, (.length > 0)
-      |> _.each _, -> 
+      |> _.each _, ->
         tags.push it
       image.tags = tags
       @push image
@@ -51,14 +51,12 @@ module.exports = do ->
     utils.Logging.info "Building #{dir}"
     dockeropts = if tags.length > 0 then ['-t', tags[0]] else []
     cache = if opt?.cache === false then false else true
-    console.log(opt)
-    console.log(cache)
     dockeropts = dockeropts.concat if not cache then ['--no-cache'] else []
 
     utils.Shell.launcher \docker, ([\build].concat dockeropts, ['.']),
       cwd: dir
     for tag in tags[1 to]
-      utils.Shell.launcher \docker, [\tag, tags[0], tag]
+      utils.Shell.launcher \docker, [\tag, '-f', tags[0], tag]
 
     utils.Logging.info "Finished building #{dir}"
     @push {dockerfile, tags}
@@ -95,7 +93,7 @@ module.exports = do ->
       .pipe th2.obj (ch, enc, cb) ->
         name = ch.to-string \utf8 .trim!
         if name?.length > 0
-          @push name 
+          @push name
         cb!
 
   stopped-containers = ->
@@ -103,7 +101,7 @@ module.exports = do ->
       .pipe th2.obj (ch, enc, cb) ->
         name = ch.to-string \utf8 .trim!
         if name?.length > 0
-          @push name 
+          @push name
         cb!
 
   running-containers = ->
@@ -111,19 +109,19 @@ module.exports = do ->
       .pipe th2.obj (ch, enc, cb) ->
         name = ch.to-string \utf8 .trim!
         if name?.length > 0
-          @push name 
+          @push name
         cb!
 
   {
-    opts, 
-    docker-spec, 
-    image-tagger, 
-    image-builder, 
+    opts,
+    docker-spec,
+    image-tagger,
+    image-builder,
     server-prefixed-tags,
-    rm-image, 
+    rm-image,
     push-image,
-    rm-container, 
-    non-tagged-images, 
+    rm-container,
+    non-tagged-images,
     stopped-containers,
     running-containers,
     stop-container
