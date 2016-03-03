@@ -56,7 +56,7 @@ module.exports = do ->
     utils.Shell.launcher \docker, ([\build].concat dockeropts, ['.']),
       cwd: dir
     for tag in tags[1 to]
-      utils.Shell.launcher \docker, [\tag, '-f', tags[0], tag]
+      utils.Shell.launcher \docker, [\tag, tags[0], tag]
 
     utils.Logging.info "Finished building #{dir}"
     @push {dockerfile, tags}
